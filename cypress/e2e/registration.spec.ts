@@ -2,7 +2,8 @@ import RegistrationPage from '../pages/RegistrationPage';
 
 describe('User Registration Form Test', () => {
   beforeEach(() => {
-    cy.visit('https://demoqa.com/automation-practice-form');
+    // @ts-ignore
+    cy.navigateToHomePage();
   });
 
   it('should register a user with valid data', () => {
@@ -19,18 +20,27 @@ describe('User Registration Form Test', () => {
       RegistrationPage.submitForm();
  
 
-      // Проверяем, что открывается модальное окно с введенными данными
-      cy.get('.modal-content').should('be.visible');
-      cy.wait(1000);
-      cy.get('.modal-body').should('contain.text', user.firstName);
-      cy.get('.modal-body').should('contain.text', user.lastName);
-      cy.get('.modal-body').should('contain.text', user.email);
-      cy.get('.modal-body').should('contain.text', user.gender);
-      cy.get('.modal-body').should('contain.text', user.mobile);
-      cy.get('.modal-body').should('contain.text', user.dateOfBirth);
-      cy.get('.modal-body').should('contain.text', user.address);
-      cy.get('.modal-body').should('contain.text', user.state);
-      cy.get('.modal-body').should('contain.text', user.city);
+      cy.get('.modal-content').should('be.visible').within(() => {
+        const expectedFields = [
+          user.firstName,
+          user.lastName,
+          user.email,
+          user.gender,
+          user.mobile,
+          user.dateOfBirth,
+          user.address,
+          user.state,
+          user.city
+        ];
+
+        cy.get('.modal-body').should(($modal) => {
+          expectedFields.forEach(field => {
+            expect($modal.text()).to.include(field);
+          });
+        });
+      });
+
+
     });
   });
 });
